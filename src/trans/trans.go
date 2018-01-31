@@ -3,6 +3,7 @@ package trans
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/neovim/go-client/nvim"
@@ -61,6 +62,11 @@ func (c *Command) getText() (string, error) {
 		return "", err
 	}
 
+	if startpos[1] == 0 && startpos[2] == 0 &&
+		endpos[1] == 0 && endpos[2] == 0 {
+		return "", nil
+	}
+
 	var text string
 	if startpos[1] == endpos[1] {
 		b, err := c.Nvim.CurrentLine()
@@ -102,6 +108,7 @@ func (c *Command) getText() (string, error) {
 		}
 		text = strings.Join(tmp, " ")
 	}
+
 	return strings.Replace(text, "\n", " ", -1), nil
 }
 
@@ -126,10 +133,18 @@ func (c *Command) langCredentialsFile() string {
 	if err := c.Nvim.Var("trans_lang_credentials_file", &creds); err != nil {
 		return ""
 	}
+	if strings.HasPrefix(creds, "~") {
+		creds = strings.TrimLeft(creds, "~")
+		creds = fmt.Sprintf("%s/%s", os.Getenv("HOME"), creds)
+	}
 	return creds
 }
 
 func (c *Command) translateOutput(text string, source string, target string) error {
+	if text == "" {
+		return nil
+	}
+
 	var opts []option.ClientOption
 	creds := c.langCredentialsFile()
 	if creds != "" {
