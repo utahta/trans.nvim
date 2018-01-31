@@ -26,29 +26,32 @@ type Command struct {
 }
 
 func (c *Command) trans(args []string) error {
-	var sline []int
-	if err := c.Nvim.Eval("getpos(\"'<\")", &sline); err != nil {
+	var startpos []int
+	if err := c.Nvim.Eval("getpos(\"'<\")", &startpos); err != nil {
 		return err
 	}
-	var eline []int
-	if err := c.Nvim.Eval("getpos(\"'>\")", &eline); err != nil {
+	var endpos []int
+	if err := c.Nvim.Eval("getpos(\"'>\")", &endpos); err != nil {
 		return err
 	}
 
 	var text string
-	if sline[1] == eline[1] {
+	if startpos[1] == endpos[1] {
 		b, err := c.Nvim.CurrentLine()
 		if err != nil {
 			return err
 		}
 		text = string(b)
-		text = text[sline[2]-1 : eline[2]-1]
+		if endpos[2] > len(text) {
+			endpos[2] = len(text)
+		}
+		text = text[startpos[2]-1 : endpos[2]]
 	} else {
 		b, err := c.Nvim.CurrentBuffer()
 		if err != nil {
 			return err
 		}
-		bytes, err := c.Nvim.BufferLines(b, sline[1]-1, eline[1], true)
+		bytes, err := c.Nvim.BufferLines(b, startpos[1]-1, endpos[1], true)
 		if err != nil {
 			return err
 		}
@@ -57,9 +60,12 @@ func (c *Command) trans(args []string) error {
 		for i, b := range bytes {
 			tmp[i] = string(b)
 			if i == 0 {
-				tmp[i] = tmp[i][sline[2]-1:]
+				tmp[i] = tmp[i][startpos[2]-1:]
 			} else if i == len(tmp)-1 {
-				tmp[i] = tmp[i][:eline[2]-1]
+				if endpos[2] > len(tmp[i]) {
+					endpos[2] = len(tmp[i])
+				}
+				tmp[i] = tmp[i][:endpos[2]]
 			}
 
 			tmp[i] = strings.TrimSpace(tmp[i])
