@@ -8,15 +8,15 @@ import (
 	"github.com/neovim/go-client/nvim"
 	"github.com/neovim/go-client/nvim/plugin"
 	"github.com/utahta/trans"
+	"google.golang.org/api/option"
 )
 
 func Run() {
 	plugin.Main(func(p *plugin.Plugin) error {
 		c := &Command{Nvim: p.Nvim}
 
-		p.HandleCommand(&plugin.CommandOptions{Name: "Trans", NArgs: "?", Range: "%"}, c.trans)
-		p.HandleCommand(&plugin.CommandOptions{Name: "TransWord", NArgs: "?", Range: "%"}, c.transWord)
-		p.HandleCommand(&plugin.CommandOptions{Name: "TransYank", NArgs: "?", Range: "%"}, c.transYank)
+		p.HandleCommand(&plugin.CommandOptions{Name: "Trans", NArgs: "?", Range: "%"}, c.Trans)
+		p.HandleCommand(&plugin.CommandOptions{Name: "TransWord", NArgs: "?", Range: "%"}, c.TransWord)
 		return nil
 	})
 }
@@ -25,21 +25,47 @@ type Command struct {
 	Nvim *nvim.Nvim
 }
 
-func (c *Command) trans(args []string) error {
+func (c *Command) Trans(args []string) error {
+	text, err := c.getText()
+	if err != nil {
+		return err
+	}
+
+	to := c.langLocale()
+	if len(args) > 0 {
+		to = args[0]
+	}
+	return c.translateOutput(text, "", to)
+}
+
+func (c *Command) TransWord(args []string) error {
+	var text string
+	if err := c.Nvim.Eval("expand('<cword>')", &text); err != nil {
+		return err
+	}
+
+	to := c.langLocale()
+	if len(args) > 0 {
+		to = args[0]
+	}
+	return c.translateOutput(text, "", to)
+}
+
+func (c *Command) getText() (string, error) {
 	var startpos []int
 	if err := c.Nvim.Eval("getpos(\"'<\")", &startpos); err != nil {
-		return err
+		return "", err
 	}
 	var endpos []int
 	if err := c.Nvim.Eval("getpos(\"'>\")", &endpos); err != nil {
-		return err
+		return "", err
 	}
 
 	var text string
 	if startpos[1] == endpos[1] {
 		b, err := c.Nvim.CurrentLine()
 		if err != nil {
-			return err
+			return "", err
 		}
 		text = string(b)
 		if endpos[2] > len(text) {
@@ -49,11 +75,11 @@ func (c *Command) trans(args []string) error {
 	} else {
 		b, err := c.Nvim.CurrentBuffer()
 		if err != nil {
-			return err
+			return "", err
 		}
 		bytes, err := c.Nvim.BufferLines(b, startpos[1]-1, endpos[1], true)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		tmp := make([]string, len(bytes))
@@ -69,50 +95,12 @@ func (c *Command) trans(args []string) error {
 			}
 
 			tmp[i] = strings.TrimSpace(tmp[i])
-			tmp[i] = strings.TrimLeft(tmp[i], "//")
-			tmp[i] = strings.TrimLeft(tmp[i], "#")
+			for _, cutset := range c.langCutset() {
+				tmp[i] = strings.TrimLeft(tmp[i], cutset)
+			}
 			tmp[i] = strings.TrimSpace(tmp[i])
 		}
 		text = strings.Join(tmp, " ")
-	}
-
-	to := c.langLocale()
-	if len(args) > 0 {
-		to = args[0]
-	}
-	return c.transOutput(text, "", to)
-}
-
-func (c *Command) transWord(args []string) error {
-	text, err := c.getText("expand('<cword>')")
-	if err != nil {
-		return err
-	}
-
-	to := c.langLocale()
-	if len(args) > 0 {
-		to = args[0]
-	}
-	return c.transOutput(text, "", to)
-}
-
-func (c *Command) transYank(args []string) error {
-	text, err := c.getText("@")
-	if err != nil {
-		return err
-	}
-
-	to := c.langLocale()
-	if len(args) > 0 {
-		to = args[0]
-	}
-	return c.transOutput(text, "", to)
-}
-
-func (c *Command) getText(expr string) (string, error) {
-	var text string
-	if err := c.Nvim.Eval(expr, &text); err != nil {
-		return "", err
 	}
 	return strings.Replace(text, "\n", " ", -1), nil
 }
@@ -125,9 +113,31 @@ func (c *Command) langLocale() string {
 	return lang
 }
 
-func (c *Command) transOutput(text string, source string, target string) error {
+func (c *Command) langCutset() []string {
+	var cutset string
+	if err := c.Nvim.Var("trans_lang_cutset", &cutset); err != nil {
+		return []string{"//", "#"}
+	}
+	return strings.Split(cutset, " ")
+}
+
+func (c *Command) langCredentialsFile() string {
+	var creds string
+	if err := c.Nvim.Var("trans_lang_credentials_file", &creds); err != nil {
+		return ""
+	}
+	return creds
+}
+
+func (c *Command) translateOutput(text string, source string, target string) error {
+	var opts []option.ClientOption
+	creds := c.langCredentialsFile()
+	if creds != "" {
+		opts = append(opts, option.WithCredentialsFile(creds))
+	}
+
 	ctx := context.Background()
-	cli, err := trans.New(ctx)
+	cli, err := trans.New(ctx, opts...)
 	if err != nil {
 		return err
 	}

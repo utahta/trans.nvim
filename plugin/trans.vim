@@ -16,5 +16,4 @@ call remote#host#Register(s:plugin_name, '', function('s:JobStart'))
 call remote#host#RegisterPlugin('trans', '0', [
 \ {'type': 'command', 'name': 'Trans', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
 \ {'type': 'command', 'name': 'TransWord', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
-\ {'type': 'command', 'name': 'TransYank', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
 \ ])
