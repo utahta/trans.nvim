@@ -2,19 +2,28 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/utahta/trans)](https://goreportcard.com/report/github.com/utahta/trans)
 
-A Google Translate CLI written in Go.
+Google Translate CLI written in Go.
 
 ## Required
 
-You must first set up authentication by creating a service account.
+You must first set up authentication by creating a API Key or service account of GCP.
+
+### API Key
+
+The API Key documentation can be found [here](https://cloud.google.com/translate/docs/auth#using_an_api_key).
+
+Set the environment variable `TRANS_API_KEY` to the API Key.
+
+### Service Account
 
 The service account documentation can be found [here](https://cloud.google.com/iam/docs/creating-managing-service-accounts).
 
-After that, set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the file path of the JSON file that contains your service account key.
+Set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the file path of the JSON file that contains your service account key.
 
 ## Note
 
-Need a little bit of money to use google translate API.
+You need a little bit of money to use google translate API.  
+e.g. it costs $0.06 for 2889 characters.
 
 ## Installation
 

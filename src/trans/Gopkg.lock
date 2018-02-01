@@ -39,7 +39,7 @@
   branch = "master"
   name = "github.com/utahta/trans"
   packages = ["."]
-  revision = "2976eea12d0e7c2767eda9b1bd649dad8cb6dcae"
+  revision = "220c92033ffd5253f8997cb1691bd7dc178d4889"
 
 [[projects]]
   branch = "master"
@@ -158,6 +158,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7b13d40cc8fd9870acbbea111f428b2c609dbc592b3ad9c07750952310801d0c"
+  inputs-digest = "932f77faf0f961186158399c673a609b11811db8e52cf77b4d8e609163b32b79"
   solver-name = "gps-cdcl"
   solver-version = 1
