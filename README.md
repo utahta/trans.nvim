@@ -2,7 +2,11 @@
 
 Google Translate plugin for Neovim written in Go.
 
+### message
 ![trans_nvim_normal_low](https://user-images.githubusercontent.com/97572/35632085-05f00030-06e9-11e8-92a5-98252d71ce1a.gif)
+
+### preview
+![trans_nvim_previe_log](https://user-images.githubusercontent.com/97572/35763640-f51224d4-08f3-11e8-8d13-0510d13d240d.gif)
 
 ## Required
 
