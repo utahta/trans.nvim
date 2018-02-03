@@ -42,5 +42,6 @@ Plug 'utahta/trans.nvim', {'do': 'make'}
 
 ```viml
 let g:trans_lang_locale = 'ja'
+let g:trans_lang_output = 'preview'
 ```
 

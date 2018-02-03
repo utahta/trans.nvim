@@ -140,6 +140,15 @@ func (c *Command) langCredentialsFile() string {
 	return creds
 }
 
+// langOutput expects return value of preview or empty string
+func (c *Command) langOutput() string {
+	var o string
+	if err := c.Nvim.Var("trans_lang_output", &o); err != nil {
+		return ""
+	}
+	return o
+}
+
 func (c *Command) translateOutput(text string, source string, target string) error {
 	if text == "" {
 		return nil
@@ -162,6 +171,39 @@ func (c *Command) translateOutput(text string, source string, target string) err
 		return err
 	}
 
-	c.Nvim.WriteOut(fmt.Sprintf("%s\n", output))
+	if c.langOutput() == "preview" {
+		if err := c.Nvim.Command("silent pclose"); err != nil {
+			return err
+		}
+		if err := c.Nvim.Command("silent pedit +set\\ noswapfile\\ buftype=nofile translated"); err != nil {
+			return err
+		}
+		if err := c.Nvim.Command("wincmd P"); err != nil {
+			return err
+		}
+		win, err := c.Nvim.CurrentWindow()
+		if err != nil {
+			return err
+		}
+		if err := c.Nvim.SetWindowHeight(win, 5); err != nil {
+			return err
+		}
+		buf, err := c.Nvim.CurrentBuffer()
+		if err != nil {
+			return err
+		}
+		if err := c.Nvim.SetBufferLines(buf, 0, -1, false, [][]byte{}); err != nil {
+			return err
+		}
+		if err := c.Nvim.SetBufferLines(buf, 0, 0, false, [][]byte{[]byte(output)}); err != nil {
+			return err
+		}
+		if err := c.Nvim.Command("wincmd p"); err != nil {
+			return err
+		}
+	} else {
+		c.Nvim.WriteOut(fmt.Sprintf("%s\n", output))
+	}
+
 	return nil
 }
