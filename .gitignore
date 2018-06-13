@@ -5,3 +5,5 @@
 .coverage
 bin
 pkg
+/venv
+*.pyc
