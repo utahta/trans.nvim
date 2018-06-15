@@ -12,7 +12,7 @@ Google Translate plugin for Vim8/Neovim.
 
 You must first set up authentication by creating a API Key or service account of GCP.
 
-Then install the [trans](https://github.com/utahta/trans) command as follows.
+Then you need to install the [trans](https://github.com/utahta/trans) command as follows.
 
 ```
 $ go get github.com/utahta/trans/cmd/trans
