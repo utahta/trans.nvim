@@ -13,4 +13,9 @@ func! Trans(...)
   return s:trans.call('trans', a:000)
 endfunc
 
+func! TransWord(...)
+  return s:trans.call('trans_word', a:000)
+endfunc
+
 command! -nargs=? -range=% Trans : call Trans(<f-args>)
+command! -nargs=? -range=% TransWord : call TransWord(<f-args>)

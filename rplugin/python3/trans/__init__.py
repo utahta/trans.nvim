@@ -13,6 +13,12 @@ class Trans(object):
         to = self._opt_trans_lang_locale()
         self._translate(text, to)
 
+    @neovim.command('TransWord', nargs='?', range='%')
+    def trans_word(self, *args):
+        text = self._vim.eval("expand('<cword>')")
+        to = self._opt_trans_lang_locale()
+        self._translate(text, to)
+
     def _translate(self, text, to):
         if text == '':
             return
