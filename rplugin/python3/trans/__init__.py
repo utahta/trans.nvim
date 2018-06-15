@@ -48,22 +48,28 @@ class Trans(object):
         if start_pos[1] == 0 and start_pos[2] == 0 and end_pos[1] == 0 and end_pos[2] == 0:
             return ""
 
-        lines = self._vim.current.buffer[start_pos[1]-1:end_pos[1]]
-        for i, line in enumerate(lines):
-            if i == 0:
-                line = line[start_pos[2]-1:]
-            elif i == len(lines)-1:
-                if end_pos[2] > len(line):
-                    end_pos[2] = len(line)
-                line = line[:end_pos[2]]
+        if start_pos[1] == end_pos[1]:
+            text = self._vim.current.buffer[start_pos[1]-1:end_pos[1]][0]
+            if end_pos[2] > len(text):
+                end_pos[2] = len(text)
+            return text[start_pos[2]-1:end_pos[2]]
+        else:
+            lines = self._vim.current.buffer[start_pos[1]-1:end_pos[1]]
+            for i, line in enumerate(lines):
+                if i == 0:
+                    line = line[start_pos[2]-1:]
+                elif i == len(lines)-1:
+                    if end_pos[2] > len(line):
+                        end_pos[2] = len(line)
+                    line = line[:end_pos[2]]
 
-            line = line.strip()
-            for c in self._opt_trans_lang_cutset():
-                if line.startswith(c):
-                    line = line[len(c):].strip()
-            lines[i] = line
+                line = line.strip()
+                for c in self._opt_trans_lang_cutset():
+                    if line.startswith(c):
+                        line = line[len(c):].strip()
+                lines[i] = line
 
-        return " ".join(lines)
+            return " ".join(lines)
 
     def _opt_trans_lang_locale(self):
         if 'trans_lang_locale' in self._vim.vars:
