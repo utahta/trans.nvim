@@ -11,12 +11,16 @@ class Trans(object):
     def trans(self, *args):
         text = self._get_text()
         to = self._opt_trans_lang_locale()
+        if len(args[0]) > 0:
+            to = args[0][0]
         self._translate(text, to)
 
     @neovim.command('TransWord', nargs='?', range='%')
     def trans_word(self, *args):
         text = self._vim.eval("expand('<cword>')")
         to = self._opt_trans_lang_locale()
+        if len(args[0]) > 0:
+            to = args[0][0]
         self._translate(text, to)
 
     def _translate(self, text, to):
