@@ -1,6 +1,6 @@
 # trans.nvim
 
-Google Translate plugin for Neovim written in Go.
+Google Translate plugin for Vim8/Neovim.
 
 ### message
 ![trans_nvim_normal_low](https://user-images.githubusercontent.com/97572/35632085-05f00030-06e9-11e8-92a5-98252d71ce1a.gif)
@@ -33,13 +33,13 @@ e.g. it costs $0.06 for 2889 characters.
 
 ```viml
 " dein.vim
-call dein#add('utahta/trans.nvim', {'build': 'make'})
+call dein#add('utahta/trans.nvim')
 
 " NeoBundle
-NeoBundle 'utahta/trans.nvim', {'build': {'unix': 'make'}}
+NeoBundle 'utahta/trans.nvim'
 
 " vim-plug
-Plug 'utahta/trans.nvim', {'do': 'make'}
+Plug 'utahta/trans.nvim'
 ```
 
 ## Settings

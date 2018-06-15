@@ -19,3 +19,4 @@ endfunc
 
 command! -nargs=? -range=% Trans : call Trans(<f-args>)
 command! -nargs=? -range=% TransWord : call TransWord(<f-args>)
+
