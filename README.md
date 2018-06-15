@@ -34,12 +34,15 @@ e.g. it costs $0.06 for 2889 characters.
 ```viml
 " dein.vim
 call dein#add('utahta/trans.nvim')
+call dein#add('roxma/nvim-yarp')
 
 " NeoBundle
 NeoBundle 'utahta/trans.nvim'
+NeoBundle 'roxma/nvim-yarp'
 
 " vim-plug
 Plug 'utahta/trans.nvim'
+Plug 'roxma/nvim-yarp'
 ```
 
 ## Settings
