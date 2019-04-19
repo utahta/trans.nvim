@@ -37,18 +37,15 @@ e.g. it costs $0.06 for 2889 characters.
 
 ## Installation
 
+For vim-plug
 ```viml
-" dein.vim
-call dein#add('utahta/trans.nvim')
-call dein#add('roxma/nvim-yarp')
-
-" NeoBundle
-NeoBundle 'utahta/trans.nvim'
-NeoBundle 'roxma/nvim-yarp'
-
-" vim-plug
-Plug 'utahta/trans.nvim'
-Plug 'roxma/nvim-yarp'
+if has('nvim')
+  Plug 'utahta/trans.nvim', {'do': ':UpdateRemotePlugins'}
+else
+  Plug 'utahta/trans.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
 ```
 
 ## Settings
