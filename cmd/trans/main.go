@@ -1,6 +1,8 @@
 package main
 
-import "trans"
+import (
+	"trans.nvim/src/trans"
+)
 
 func main() {
 	trans.Run()

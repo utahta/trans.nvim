@@ -1,6 +1,6 @@
 # trans.nvim
 
-Google Translate plugin for Neovim written in Go.
+Google Translate plugin for Vim8/Neovim.
 
 ### message
 ![trans_nvim_normal_low](https://user-images.githubusercontent.com/97572/35632085-05f00030-06e9-11e8-92a5-98252d71ce1a.gif)
@@ -11,6 +11,12 @@ Google Translate plugin for Neovim written in Go.
 ## Required
 
 You must first set up authentication by creating a API Key or service account of GCP.
+
+Then you need to install the [trans](https://github.com/utahta/trans) command as follows.
+
+```
+$ go get github.com/utahta/trans/cmd/trans
+```
 
 ### API Key
 
@@ -31,15 +37,15 @@ e.g. it costs $0.06 for 2889 characters.
 
 ## Installation
 
+For vim-plug
 ```viml
-" dein.vim
-call dein#add('utahta/trans.nvim', {'build': 'make'})
-
-" NeoBundle
-NeoBundle 'utahta/trans.nvim', {'build': {'unix': 'make'}}
-
-" vim-plug
-Plug 'utahta/trans.nvim', {'do': 'make'}
+if has('nvim')
+  Plug 'utahta/trans.nvim', {'do': 'make'}
+else
+  Plug 'utahta/trans.nvim', {'do': 'make'}
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
 ```
 
 ## Settings
@@ -48,4 +54,3 @@ Plug 'utahta/trans.nvim', {'do': 'make'}
 let g:trans_lang_locale = 'ja'
 let g:trans_lang_output = 'preview'
 ```
-
