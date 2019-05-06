@@ -31,11 +31,11 @@ func (pw *previewWindow) Open() error {
 		return err
 	}
 
-	bufID, err := pw.vim.CurrentBuffer()
+	bufnr, err := pw.vim.CurrentBuffer()
 	if err != nil {
 		return err
 	}
-	pw.buffer, err = newBuffer(pw.vim, withBufferID(bufID))
+	pw.buffer, err = newBuffer(pw.vim, withBufnr(bufnr))
 	if err != nil {
 		return err
 	}

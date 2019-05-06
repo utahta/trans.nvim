@@ -23,13 +23,7 @@ type (
 	}
 )
 
-func (w *windowHandler) Open(winType string) (window, error) {
-	if w.currentWin != nil {
-		if err := w.currentWin.Close(); err != nil {
-			return nil, err
-		}
-	}
-
+func (w *windowHandler) OpenCurrentWindow(winType string) (window, error) {
 	switch winType {
 	case "preview":
 		w.currentWin = &previewWindow{vim: w.vim}
@@ -43,6 +37,13 @@ func (w *windowHandler) Open(winType string) (window, error) {
 		return nil, err
 	}
 	return w.currentWin, nil
+}
+
+func (w *windowHandler) CloseCurrentWindow() error {
+	if w.currentWin == nil {
+		return nil
+	}
+	return w.currentWin.Close()
 }
 
 func (mw *messageWindow) Open() error {

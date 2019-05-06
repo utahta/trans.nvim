@@ -48,7 +48,10 @@ func (c *handler) Trans(args []string) error {
 		return err
 	}
 
-	w, err := c.windowHandler.Open(c.config.Output())
+	if err := c.windowHandler.CloseCurrentWindow(); err != nil {
+		return err
+	}
+	w, err := c.windowHandler.OpenCurrentWindow(c.config.Output())
 	if err != nil {
 		return err
 	}
@@ -73,7 +76,10 @@ func (c *handler) TransWord(args []string) error {
 		return err
 	}
 
-	w, err := c.windowHandler.Open(c.config.Output())
+	if err := c.windowHandler.CloseCurrentWindow(); err != nil {
+		return err
+	}
+	w, err := c.windowHandler.OpenCurrentWindow(c.config.Output())
 	if err != nil {
 		return err
 	}

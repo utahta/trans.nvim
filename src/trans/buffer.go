@@ -4,8 +4,8 @@ import "github.com/neovim/go-client/nvim"
 
 type (
 	buffer struct {
-		vim *nvim.Nvim
-		id  nvim.Buffer
+		vim    *nvim.Nvim
+		number nvim.Buffer
 	}
 
 	bufferOption func(b *buffer)
@@ -13,14 +13,14 @@ type (
 
 func newBuffer(vim *nvim.Nvim, opts ...bufferOption) (*buffer, error) {
 	b := &buffer{
-		vim: vim,
-		id:  -1,
+		vim:    vim,
+		number: -1,
 	}
 	for _, opt := range opts {
 		opt(b)
 	}
 
-	if b.id < 0 {
+	if b.number < 0 {
 		if err := b.New(); err != nil {
 			return nil, err
 		}
@@ -31,9 +31,9 @@ func newBuffer(vim *nvim.Nvim, opts ...bufferOption) (*buffer, error) {
 	return b, nil
 }
 
-func withBufferID(id nvim.Buffer) bufferOption {
+func withBufnr(nr nvim.Buffer) bufferOption {
 	return func(b *buffer) {
-		b.id = id
+		b.number = nr
 	}
 }
 
@@ -42,7 +42,7 @@ func (b *buffer) New() error {
 		return err
 	}
 	var err error
-	b.id, err = b.vim.CurrentBuffer()
+	b.number, err = b.vim.CurrentBuffer()
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (b *buffer) withOptions() error {
 		{"modeline", false},
 	}
 	for _, o := range options {
-		if err := b.vim.SetBufferOption(b.id, o.name, o.value); err != nil {
+		if err := b.vim.SetBufferOption(b.number, o.name, o.value); err != nil {
 			return err
 		}
 	}
@@ -69,7 +69,7 @@ func (b *buffer) withOptions() error {
 }
 
 func (b *buffer) Write(s string) error {
-	if err := b.vim.SetBufferLines(b.id, 0, 0, false, [][]byte{[]byte(s)}); err != nil {
+	if err := b.vim.SetBufferLines(b.number, 0, 0, false, [][]byte{[]byte(s)}); err != nil {
 		return err
 	}
 	options := []struct {
@@ -80,7 +80,7 @@ func (b *buffer) Write(s string) error {
 		{"modifiable", false},
 	}
 	for _, o := range options {
-		if err := b.vim.SetBufferOption(b.id, o.name, o.value); err != nil {
+		if err := b.vim.SetBufferOption(b.number, o.name, o.value); err != nil {
 			return err
 		}
 	}
