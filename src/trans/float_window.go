@@ -19,14 +19,14 @@ func (fw *floatWindow) Open() error {
 	if err != nil {
 		return err
 	}
-	opts := map[string]interface{}{
+	cfg := map[string]interface{}{
 		"relative": "cursor",
 		"col":      1,
 		"row":      1,
-		"width":    100,
-		"height":   2,
+		"width":    80,
+		"height":   1,
 	}
-	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, opts); err != nil {
+	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, cfg); err != nil {
 		return err
 	}
 	fw.id, err = fw.vim.CurrentWindow()
@@ -60,5 +60,40 @@ func (fw *floatWindow) Close() error {
 }
 
 func (fw *floatWindow) SetLine(s string) error {
-	return fw.buffer.Write(s)
+	var (
+		ss    []string
+		width int
+	)
+	if err := fw.vim.Call("strdisplaywidth", &width, s); err != nil {
+		return err
+	}
+
+	const maxWidth = 80
+	if width > maxWidth {
+		for i := 0; i <= width/maxWidth; i++ {
+			var (
+				text   string
+				start  = i * maxWidth
+				length = i*maxWidth + maxWidth
+			)
+			if err := fw.vim.Call("strcharpart", &text, s, start, length); err != nil {
+				return err
+			}
+			ss = append(ss, s)
+		}
+		width = maxWidth
+	} else {
+		ss = append(ss, s)
+	}
+	height := len(ss)
+
+	cfg := map[string]interface{}{
+		"width":  width,
+		"height": height,
+	}
+	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, cfg); err != nil {
+		return err
+	}
+
+	return fw.buffer.WriteStrings(ss)
 }

@@ -68,8 +68,16 @@ func (b *buffer) withOptions() error {
 	return nil
 }
 
-func (b *buffer) Write(s string) error {
-	if err := b.vim.SetBufferLines(b.number, 0, 0, false, [][]byte{[]byte(s)}); err != nil {
+func (b *buffer) WriteString(s string) error {
+	return b.WriteStrings([]string{s})
+}
+
+func (b *buffer) WriteStrings(ss []string) error {
+	var bs [][]byte
+	for _, s := range ss {
+		bs = append(bs, []byte(s))
+	}
+	if err := b.vim.SetBufferLines(b.number, 0, 0, false, bs); err != nil {
 		return err
 	}
 	options := []struct {
