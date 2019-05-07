@@ -19,11 +19,12 @@ func (fw *floatWindow) Open() error {
 	if err != nil {
 		return err
 	}
+	// this is a configuration of initial floating window.
 	cfg := map[string]interface{}{
 		"relative": "cursor",
-		"col":      1,
-		"row":      1,
-		"width":    80,
+		"col":      0,
+		"row":      0,
+		"width":    1,
 		"height":   1,
 	}
 	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, cfg); err != nil {
@@ -88,8 +89,11 @@ func (fw *floatWindow) SetLine(s string) error {
 	height := len(ss)
 
 	cfg := map[string]interface{}{
-		"width":  width,
-		"height": height,
+		"relative": "cursor",
+		"col":      1,
+		"row":      -height,
+		"width":    width,
+		"height":   height,
 	}
 	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, cfg); err != nil {
 		return err

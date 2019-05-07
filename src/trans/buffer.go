@@ -25,7 +25,7 @@ func newBuffer(vim *nvim.Nvim, opts ...bufferOption) (*buffer, error) {
 			return nil, err
 		}
 	}
-	if err := b.withOptions(); err != nil {
+	if err := b.applyOptions(); err != nil {
 		return nil, err
 	}
 	return b, nil
@@ -49,7 +49,7 @@ func (b *buffer) New() error {
 	return nil
 }
 
-func (b *buffer) withOptions() error {
+func (b *buffer) applyOptions() error {
 	options := []struct {
 		name  string
 		value interface{}
