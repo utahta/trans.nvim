@@ -2,6 +2,7 @@ package trans
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/neovim/go-client/nvim"
@@ -20,7 +21,7 @@ func (fw *floatingWindow) Open() error {
 	if err != nil {
 		return err
 	}
-	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, fw.getWindowConfig(0, 0, 1, 1)); err != nil {
+	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, fw.getWindowConfig(0, 0, 1, 80)); err != nil {
 		return err
 	}
 	fw.id, err = fw.vim.CurrentWindow()
@@ -65,7 +66,7 @@ func (fw *floatingWindow) SetLine(s string) error {
 
 	const maxWidth = 80
 	if width > maxWidth {
-		height = width/maxWidth + 1
+		height = int(math.Ceil(float64(width) / float64(maxWidth)))
 		width = maxWidth
 	} else {
 		height = 1
