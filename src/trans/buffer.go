@@ -1,6 +1,8 @@
 package trans
 
-import "github.com/neovim/go-client/nvim"
+import (
+	"github.com/neovim/go-client/nvim"
+)
 
 type (
 	buffer struct {

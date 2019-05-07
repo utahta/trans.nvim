@@ -2,6 +2,7 @@ package trans
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/neovim/go-client/nvim"
 )
@@ -19,7 +20,7 @@ func (fw *floatingWindow) Open() error {
 	if err != nil {
 		return err
 	}
-	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, fw.getConfig(1, 1)); err != nil {
+	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, fw.getWindowConfig(0, 0, 1, 1)); err != nil {
 		return err
 	}
 	fw.id, err = fw.vim.CurrentWindow()
@@ -54,46 +55,35 @@ func (fw *floatingWindow) Close() error {
 
 func (fw *floatingWindow) SetLine(s string) error {
 	var (
-		ss    []string
-		width int
+		width  int
+		height int
 	)
+	s = strings.TrimSpace(s)
 	if err := fw.vim.Call("strdisplaywidth", &width, s); err != nil {
 		return err
 	}
 
 	const maxWidth = 80
 	if width > maxWidth {
-		for i := 0; i <= width/maxWidth; i++ {
-			var (
-				text   string
-				start  = i * maxWidth
-				length = i*maxWidth + maxWidth
-			)
-			if err := fw.vim.Call("strcharpart", &text, s, start, length); err != nil {
-				return err
-			}
-			ss = append(ss, s)
-		}
+		height = width/maxWidth + 1
 		width = maxWidth
 	} else {
-		ss = append(ss, s)
+		height = 1
 	}
-	height := len(ss)
 
-	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, fw.getConfig(width, height)); err != nil {
+	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, fw.getWindowConfig(-height, 0, height, width)); err != nil {
 		return err
 	}
-
-	return fw.buffer.WriteStrings(ss)
+	return fw.buffer.WriteString(s)
 }
 
-func (fw *floatingWindow) getConfig(width, height int) map[string]interface{} {
+func (fw *floatingWindow) getWindowConfig(row, col, height, width int) map[string]interface{} {
 	return map[string]interface{}{
 		"relative":  "cursor",
-		"col":       1,
-		"row":       -height,
-		"width":     width,
+		"row":       row,
+		"col":       col,
 		"height":    height,
+		"width":     width,
 		"focusable": true,
 	}
 }
