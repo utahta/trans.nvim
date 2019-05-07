@@ -28,7 +28,7 @@ func (w *windowHandler) OpenCurrentWindow(winType string) (window, error) {
 	case "preview":
 		w.currentWin = &previewWindow{vim: w.vim}
 	case "float", "floating":
-		w.currentWin = &floatWindow{vim: w.vim}
+		w.currentWin = &floatingWindow{vim: w.vim}
 	default:
 		w.currentWin = &messageWindow{vim: w.vim}
 	}

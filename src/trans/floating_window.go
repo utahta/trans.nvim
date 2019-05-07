@@ -7,27 +7,19 @@ import (
 )
 
 type (
-	floatWindow struct {
+	floatingWindow struct {
 		vim    *nvim.Nvim
 		id     nvim.Window
 		buffer *buffer
 	}
 )
 
-func (fw *floatWindow) Open() error {
+func (fw *floatingWindow) Open() error {
 	bufnr, err := fw.vim.CurrentBuffer()
 	if err != nil {
 		return err
 	}
-	// this is a configuration of initial floating window.
-	cfg := map[string]interface{}{
-		"relative": "cursor",
-		"col":      0,
-		"row":      0,
-		"width":    1,
-		"height":   1,
-	}
-	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, cfg); err != nil {
+	if err := fw.vim.Call("nvim_open_win", nil, bufnr, true, fw.getConfig(1, 1)); err != nil {
 		return err
 	}
 	fw.id, err = fw.vim.CurrentWindow()
@@ -46,7 +38,7 @@ func (fw *floatWindow) Open() error {
 	return nil
 }
 
-func (fw *floatWindow) Close() error {
+func (fw *floatingWindow) Close() error {
 	var winnr int
 	if err := fw.vim.Call("win_id2win", &winnr, fw.id); err != nil {
 		return err
@@ -60,7 +52,7 @@ func (fw *floatWindow) Close() error {
 	return nil
 }
 
-func (fw *floatWindow) SetLine(s string) error {
+func (fw *floatingWindow) SetLine(s string) error {
 	var (
 		ss    []string
 		width int
@@ -88,16 +80,20 @@ func (fw *floatWindow) SetLine(s string) error {
 	}
 	height := len(ss)
 
-	cfg := map[string]interface{}{
-		"relative": "cursor",
-		"col":      1,
-		"row":      -height,
-		"width":    width,
-		"height":   height,
-	}
-	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, cfg); err != nil {
+	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, fw.getConfig(width, height)); err != nil {
 		return err
 	}
 
 	return fw.buffer.WriteStrings(ss)
+}
+
+func (fw *floatingWindow) getConfig(width, height int) map[string]interface{} {
+	return map[string]interface{}{
+		"relative":  "cursor",
+		"col":       1,
+		"row":       -height,
+		"width":     width,
+		"height":    height,
+		"focusable": true,
+	}
 }
