@@ -41,6 +41,8 @@ func (fw *floatingWindow) Open() error {
 }
 
 func (fw *floatingWindow) Close() error {
+	// we considered to use nvim_win_get_number api, but it occurs an error when window id is invalid
+	// so we still use win_id2win api.
 	var winnr int
 	if err := fw.vim.Call("win_id2win", &winnr, fw.id); err != nil {
 		return err
