@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"time"
 
 	"github.com/neovim/go-client/nvim"
+	"trans.nvim/src/internal/event"
 )
 
 type (
@@ -37,6 +39,14 @@ func (fw *floatingWindow) Open() error {
 	if err := fw.vim.Command("wincmd p"); err != nil {
 		return err
 	}
+
+	event.On(event.TypeMoveEvent, func() {
+		timer := time.NewTimer(2 * time.Second)
+		select {
+		case <-timer.C:
+			fw.Close()
+		}
+	})
 	return nil
 }
 

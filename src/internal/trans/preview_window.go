@@ -1,6 +1,11 @@
 package trans
 
-import "github.com/neovim/go-client/nvim"
+import (
+	"time"
+
+	"github.com/neovim/go-client/nvim"
+	"trans.nvim/src/internal/event"
+)
 
 type (
 	previewWindow struct {
@@ -43,6 +48,14 @@ func (pw *previewWindow) Open() error {
 	if err := pw.vim.Command("wincmd p"); err != nil {
 		return err
 	}
+
+	event.On(event.TypeMoveEvent, func() {
+		timer := time.NewTimer(2 * time.Second)
+		select {
+		case <-timer.C:
+			pw.Close()
+		}
+	})
 	return nil
 }
 

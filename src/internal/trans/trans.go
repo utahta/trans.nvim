@@ -6,6 +6,7 @@ import (
 
 	"github.com/neovim/go-client/nvim"
 	"github.com/neovim/go-client/nvim/plugin"
+	"trans.nvim/src/internal/event"
 )
 
 // Run runs a trans.nvim plugin.
@@ -20,11 +21,11 @@ func Run() {
 		p.HandleCommand(&plugin.CommandOptions{Name: "Trans", NArgs: "?", Range: "%"}, h.Trans)
 		p.HandleCommand(&plugin.CommandOptions{Name: "TransWord", NArgs: "?", Range: "%"}, h.TransWord)
 
-		//p.HandleAutocmd(&plugin.AutocmdOptions{
-		//	Group:   "trans-event",
-		//	Event:   "CursorMoved,CursorMovedI",
-		//	Pattern: "<buffer>",
-		//}, nil)
+		p.HandleAutocmd(&plugin.AutocmdOptions{
+			Group:   event.Group,
+			Event:   "CursorMoved,CursorMovedI",
+			Pattern: "<buffer>",
+		}, event.Callback(event.TypeMoveEvent))
 		return nil
 	})
 }
