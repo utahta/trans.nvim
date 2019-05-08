@@ -19,6 +19,12 @@ func Run() {
 		}
 		p.HandleCommand(&plugin.CommandOptions{Name: "Trans", NArgs: "?", Range: "%"}, h.Trans)
 		p.HandleCommand(&plugin.CommandOptions{Name: "TransWord", NArgs: "?", Range: "%"}, h.TransWord)
+
+		//p.HandleAutocmd(&plugin.AutocmdOptions{
+		//	Group:   "trans-event",
+		//	Event:   "CursorMoved,CursorMovedI",
+		//	Pattern: "<buffer>",
+		//}, nil)
 		return nil
 	})
 }

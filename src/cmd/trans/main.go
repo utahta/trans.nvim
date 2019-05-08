@@ -1,7 +1,7 @@
 package main
 
 import (
-	"trans.nvim/src/trans"
+	"trans.nvim/src/internal/trans"
 )
 
 func main() {
