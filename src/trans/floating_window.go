@@ -74,7 +74,19 @@ func (fw *floatingWindow) SetLine(s string) error {
 		height = 1
 	}
 
-	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, fw.getWindowConfig(-height, 0, height, width)); err != nil {
+	var (
+		winline int
+		row     = 1
+		col     = 0
+	)
+	if err := fw.vim.Call("winline", &winline); err != nil {
+		return err
+	}
+	if (winline - height) > 0 {
+		row = -height
+	}
+
+	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, fw.getWindowConfig(row, col, height, width)); err != nil {
 		return err
 	}
 	return fw.buffer.WriteString(s)
