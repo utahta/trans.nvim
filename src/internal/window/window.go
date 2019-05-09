@@ -22,47 +22,50 @@ type (
 		Close() error
 		SetLine(s string) error
 	}
-
-	messageWindow struct {
-		vim *nvim.Nvim
-	}
 )
 
 func NewHandler(vim *nvim.Nvim) Handler {
 	return &handler{vim: vim}
 }
 
-func (w *handler) OpenCurrentWindow(winType string) (Window, error) {
+func (h *handler) OpenCurrentWindow(winType string) (Window, error) {
 	switch winType {
 	case "preview":
-		w.currentWin = &previewWindow{vim: w.vim}
+		h.currentWin = &previewWindow{vim: h.vim}
 	case "float", "floating":
-		w.currentWin = &floatingWindow{vim: w.vim}
+		if h.validFloatingWindow() {
+			h.currentWin = &floatingWindow{vim: h.vim}
+		} else {
+			h.currentWin = &previewWindow{vim: h.vim}
+		}
 	default:
-		w.currentWin = &messageWindow{vim: w.vim}
+		h.currentWin = &messageWindow{vim: h.vim}
 	}
 
-	if err := w.currentWin.Open(); err != nil {
+	if err := h.currentWin.Open(); err != nil {
 		return nil, err
 	}
-	return w.currentWin, nil
+	return h.currentWin, nil
 }
 
-func (w *handler) CloseCurrentWindow() error {
-	if w.currentWin == nil {
+func (h *handler) CloseCurrentWindow() error {
+	if h.currentWin == nil {
 		return nil
 	}
-	return w.currentWin.Close()
+	return h.currentWin.Close()
 }
 
-func (mw *messageWindow) Open() error {
-	return nil
-}
+func (h *handler) validFloatingWindow() bool {
+	for _, expr := range []string{`has('nvim')`, `exists('*nvim_win_set_config')`} {
+		var valid bool
+		if err := h.vim.Eval(expr, &valid); err != nil {
+			h.vim.WriteErr(fmt.Sprintf("invalid: %v\n", err))
+			return false
+		}
 
-func (mw *messageWindow) Close() error {
-	return nil
-}
-
-func (mw *messageWindow) SetLine(s string) error {
-	return mw.vim.WriteOut(fmt.Sprintf("%s\n", s))
+		if !valid {
+			return false
+		}
+	}
+	return true
 }
