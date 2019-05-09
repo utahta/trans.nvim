@@ -1,4 +1,4 @@
-package trans
+package config
 
 import (
 	"fmt"
@@ -9,10 +9,21 @@ import (
 )
 
 type (
+	Config interface {
+		Locale() string
+		Cutset() []string
+		CredentialsFile() string
+		Output() string
+	}
+
 	config struct {
 		vim *nvim.Nvim
 	}
 )
+
+func New(vim *nvim.Nvim) Config {
+	return &config{vim: vim}
+}
 
 func (c *config) Locale() string {
 	var lang string

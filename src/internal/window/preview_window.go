@@ -1,9 +1,10 @@
-package trans
+package window
 
 import (
 	"time"
 
 	"github.com/neovim/go-client/nvim"
+	"trans.nvim/src/internal/buffer"
 	"trans.nvim/src/internal/event"
 )
 
@@ -11,7 +12,7 @@ type (
 	previewWindow struct {
 		vim    *nvim.Nvim
 		id     nvim.Window
-		buffer *buffer
+		buffer buffer.Buffer
 	}
 )
 
@@ -40,7 +41,7 @@ func (pw *previewWindow) Open() error {
 	if err != nil {
 		return err
 	}
-	pw.buffer, err = newBuffer(pw.vim, withBufnr(bufnr))
+	pw.buffer, err = buffer.New(pw.vim, buffer.WithBufnr(bufnr))
 	if err != nil {
 		return err
 	}

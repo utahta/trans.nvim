@@ -1,19 +1,24 @@
-package trans
+package buffer
 
 import (
 	"github.com/neovim/go-client/nvim"
 )
 
 type (
+	Buffer interface {
+		WriteString(s string) error
+		WriteStrings(ss []string) error
+	}
+
 	buffer struct {
 		vim    *nvim.Nvim
 		number nvim.Buffer
 	}
 
-	bufferOption func(b *buffer)
+	Option func(b *buffer)
 )
 
-func newBuffer(vim *nvim.Nvim, opts ...bufferOption) (*buffer, error) {
+func New(vim *nvim.Nvim, opts ...Option) (Buffer, error) {
 	b := &buffer{
 		vim:    vim,
 		number: -1,
@@ -23,7 +28,7 @@ func newBuffer(vim *nvim.Nvim, opts ...bufferOption) (*buffer, error) {
 	}
 
 	if b.number < 0 {
-		if err := b.New(); err != nil {
+		if err := b.new(); err != nil {
 			return nil, err
 		}
 	}
@@ -33,13 +38,13 @@ func newBuffer(vim *nvim.Nvim, opts ...bufferOption) (*buffer, error) {
 	return b, nil
 }
 
-func withBufnr(nr nvim.Buffer) bufferOption {
+func WithBufnr(nr nvim.Buffer) Option {
 	return func(b *buffer) {
 		b.number = nr
 	}
 }
 
-func (b *buffer) New() error {
+func (b *buffer) new() error {
 	if err := b.vim.Command("silent enew"); err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package trans
+package translator
 
 import (
 	"context"
@@ -10,11 +10,16 @@ import (
 )
 
 type (
+	Translator interface {
+		TranslatePos(ctx context.Context, opt Option) (string, error)
+		TranslateWord(ctx context.Context, opt Option) (string, error)
+	}
+
 	translator struct {
 		vim *nvim.Nvim
 	}
 
-	translatorOption struct {
+	Option struct {
 		Source          string
 		Target          string
 		Cutset          []string
@@ -22,7 +27,13 @@ type (
 	}
 )
 
-func (t *translator) TranslatePos(ctx context.Context, opt translatorOption) (string, error) {
+func New(vim *nvim.Nvim) Translator {
+	return &translator{
+		vim: vim,
+	}
+}
+
+func (t *translator) TranslatePos(ctx context.Context, opt Option) (string, error) {
 	var startPos []int
 	if err := t.vim.Eval(`getpos("'<")`, &startPos); err != nil {
 		return "", err
@@ -82,7 +93,7 @@ func (t *translator) TranslatePos(ctx context.Context, opt translatorOption) (st
 	return t.translate(ctx, text, opt)
 }
 
-func (t *translator) TranslateWord(ctx context.Context, opt translatorOption) (string, error) {
+func (t *translator) TranslateWord(ctx context.Context, opt Option) (string, error) {
 	var text string
 	if err := t.vim.Eval("expand('<cword>')", &text); err != nil {
 		return "", err
@@ -90,7 +101,7 @@ func (t *translator) TranslateWord(ctx context.Context, opt translatorOption) (s
 	return t.translate(ctx, text, opt)
 }
 
-func (t *translator) translate(ctx context.Context, text string, opt translatorOption) (string, error) {
+func (t *translator) translate(ctx context.Context, text string, opt Option) (string, error) {
 	if text == "" {
 		return "", nil
 	}

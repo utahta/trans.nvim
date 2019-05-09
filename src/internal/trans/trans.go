@@ -6,7 +6,10 @@ import (
 
 	"github.com/neovim/go-client/nvim"
 	"github.com/neovim/go-client/nvim/plugin"
+	"trans.nvim/src/internal/config"
 	"trans.nvim/src/internal/event"
+	"trans.nvim/src/internal/translator"
+	"trans.nvim/src/internal/window"
 )
 
 // Run runs a trans.nvim plugin.
@@ -14,9 +17,9 @@ func Run() {
 	plugin.Main(func(p *plugin.Plugin) error {
 		h := &handler{
 			vim:           p.Nvim,
-			windowHandler: windowHandler{vim: p.Nvim},
-			translator:    translator{vim: p.Nvim},
-			config:        config{vim: p.Nvim},
+			windowHandler: window.NewHandler(p.Nvim),
+			translator:    translator.New(p.Nvim),
+			config:        config.New(p.Nvim),
 		}
 		p.HandleCommand(&plugin.CommandOptions{Name: "Trans", NArgs: "?", Range: "%"}, h.Trans)
 		p.HandleCommand(&plugin.CommandOptions{Name: "TransWord", NArgs: "?", Range: "%"}, h.TransWord)
@@ -33,9 +36,9 @@ func Run() {
 
 type handler struct {
 	vim           *nvim.Nvim
-	windowHandler windowHandler
-	translator    translator
-	config        config
+	windowHandler window.Handler
+	translator    translator.Translator
+	config        config.Config
 }
 
 func (c *handler) Trans(args []string) error {
@@ -46,7 +49,7 @@ func (c *handler) Trans(args []string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	text, err := c.translator.TranslatePos(ctx, translatorOption{
+	text, err := c.translator.TranslatePos(ctx, translator.Option{
 		Source:          "",
 		Target:          target,
 		Cutset:          c.config.Cutset(),
@@ -74,7 +77,7 @@ func (c *handler) TransWord(args []string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	text, err := c.translator.TranslateWord(ctx, translatorOption{
+	text, err := c.translator.TranslateWord(ctx, translator.Option{
 		Source:          "",
 		Target:          target,
 		Cutset:          c.config.Cutset(),

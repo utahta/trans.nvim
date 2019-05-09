@@ -1,4 +1,4 @@
-package trans
+package window
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/neovim/go-client/nvim"
+	"trans.nvim/src/internal/buffer"
 	"trans.nvim/src/internal/event"
 )
 
@@ -14,7 +15,7 @@ type (
 	floatingWindow struct {
 		vim    *nvim.Nvim
 		id     nvim.Window
-		buffer *buffer
+		buffer buffer.Buffer
 	}
 )
 
@@ -31,7 +32,7 @@ func (fw *floatingWindow) Open() error {
 		return err
 	}
 
-	fw.buffer, err = newBuffer(fw.vim)
+	fw.buffer, err = buffer.New(fw.vim)
 	if err != nil {
 		return err
 	}

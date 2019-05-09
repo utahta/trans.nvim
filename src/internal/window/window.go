@@ -1,4 +1,4 @@
-package trans
+package window
 
 import (
 	"fmt"
@@ -7,12 +7,17 @@ import (
 )
 
 type (
-	windowHandler struct {
-		vim        *nvim.Nvim
-		currentWin window
+	Handler interface {
+		OpenCurrentWindow(winType string) (Window, error)
+		CloseCurrentWindow() error
 	}
 
-	window interface {
+	handler struct {
+		vim        *nvim.Nvim
+		currentWin Window
+	}
+
+	Window interface {
 		Open() error
 		Close() error
 		SetLine(s string) error
@@ -23,7 +28,11 @@ type (
 	}
 )
 
-func (w *windowHandler) OpenCurrentWindow(winType string) (window, error) {
+func NewHandler(vim *nvim.Nvim) Handler {
+	return &handler{vim: vim}
+}
+
+func (w *handler) OpenCurrentWindow(winType string) (Window, error) {
 	switch winType {
 	case "preview":
 		w.currentWin = &previewWindow{vim: w.vim}
@@ -39,7 +48,7 @@ func (w *windowHandler) OpenCurrentWindow(winType string) (window, error) {
 	return w.currentWin, nil
 }
 
-func (w *windowHandler) CloseCurrentWindow() error {
+func (w *handler) CloseCurrentWindow() error {
 	if w.currentWin == nil {
 		return nil
 	}
