@@ -40,11 +40,11 @@ func (fw *floatingWindow) Open() error {
 		return err
 	}
 
-	event.On(event.TypeMoveEvent, func() {
-		timer := time.NewTimer(2 * time.Second)
+	event.On(event.TypeMoveEvent, func() error {
+		timer := time.NewTimer(1500 * time.Millisecond)
 		select {
 		case <-timer.C:
-			fw.Close()
+			return fw.Close()
 		}
 	})
 	return nil

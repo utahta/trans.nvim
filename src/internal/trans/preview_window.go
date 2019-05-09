@@ -49,11 +49,11 @@ func (pw *previewWindow) Open() error {
 		return err
 	}
 
-	event.On(event.TypeMoveEvent, func() {
-		timer := time.NewTimer(2 * time.Second)
+	event.On(event.TypeMoveEvent, func() error {
+		timer := time.NewTimer(1500 * time.Millisecond)
 		select {
 		case <-timer.C:
-			pw.Close()
+			return pw.Close()
 		}
 	})
 	return nil

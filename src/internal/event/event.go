@@ -3,8 +3,8 @@ package event
 import "sync"
 
 type (
-	Type    int
-	eventFn func()
+	Type          int
+	eventCallback func() error
 )
 
 const (
@@ -14,12 +14,12 @@ const (
 )
 
 var (
-	mux         sync.RWMutex
-	eventFnsMap = map[Type][]eventFn{}
+	mux               sync.RWMutex
+	eventCallbacksMap = map[Type][]eventCallback{}
 )
 
 func init() {
-	eventFnsMap[TypeMoveEvent] = nil
+	eventCallbacksMap[TypeMoveEvent] = nil
 }
 
 func Callback(t Type) func() error {
@@ -27,24 +27,28 @@ func Callback(t Type) func() error {
 		mux.Lock()
 		defer mux.Unlock()
 
-		fns := eventFnsMap[t]
-		if len(fns) == 0 {
+		cbs := eventCallbacksMap[t]
+		if len(cbs) == 0 {
 			return nil
 		}
 
-		go fns[0]()
+		cb := cbs[0]
+		eventCallbacksMap[t] = cbs[1:]
 
-		eventFnsMap[t] = fns[1:]
-
+		go func() {
+			if err := cb(); err != nil {
+				panic(err)
+			}
+		}()
 		return nil
 	}
 }
 
-func On(t Type, fn eventFn) {
+func On(t Type, cb eventCallback) {
 	mux.Lock()
 	defer mux.Unlock()
 
-	eventFnsMap[t] = append(eventFnsMap[t], fn)
+	eventCallbacksMap[t] = append(eventCallbacksMap[t], cb)
 }
 
 func (t Type) String() string {
