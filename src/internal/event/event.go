@@ -1,10 +1,21 @@
 package event
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+
+	"github.com/neovim/go-client/nvim"
+)
 
 type (
-	Type          int
-	eventCallback func() error
+	Type         int
+	CallbackFunc func() error
+
+	handler struct {
+		vim          *nvim.Nvim
+		mux          sync.RWMutex
+		callbacksMap map[Type][]CallbackFunc
+	}
 )
 
 const (
@@ -14,43 +25,49 @@ const (
 )
 
 var (
-	mux               sync.RWMutex
-	eventCallbacksMap = map[Type][]eventCallback{}
+	defaultHandler *handler
 )
 
-func init() {
-	eventCallbacksMap[TypeMoveEvent] = nil
+func RegisterHandler(vim *nvim.Nvim) {
+	defaultHandler = &handler{
+		vim:          vim,
+		callbacksMap: map[Type][]CallbackFunc{},
+	}
 }
 
-func Callback(t Type) func() error {
-	return func() error {
-		mux.Lock()
-		defer mux.Unlock()
+func Callback(t Type) CallbackFunc {
+	return defaultHandler.Callback(t)
+}
 
-		cbs := eventCallbacksMap[t]
+func On(t Type, cb CallbackFunc) {
+	defaultHandler.On(t, cb)
+}
+
+func (h *handler) Callback(t Type) CallbackFunc {
+	return func() error {
+		h.mux.Lock()
+		defer h.mux.Unlock()
+
+		cbs := h.callbacksMap[t]
 		if len(cbs) == 0 {
 			return nil
 		}
 
 		cb := cbs[0]
-		eventCallbacksMap[t] = cbs[1:]
+		h.callbacksMap[t] = cbs[1:]
 
 		go func() {
 			if err := cb(); err != nil {
-				panic(err)
+				h.vim.WriteErr(fmt.Sprintf("failed to callback function on %v: %v\n", t, err))
 			}
 		}()
 		return nil
 	}
 }
 
-func On(t Type, cb eventCallback) {
-	mux.Lock()
-	defer mux.Unlock()
+func (h *handler) On(t Type, cb CallbackFunc) {
+	h.mux.Lock()
+	defer h.mux.Unlock()
 
-	eventCallbacksMap[t] = append(eventCallbacksMap[t], cb)
-}
-
-func (t Type) String() string {
-	return string(t)
+	h.callbacksMap[t] = append(h.callbacksMap[t], cb)
 }
