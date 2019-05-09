@@ -12,19 +12,15 @@ Google Translate plugin for Vim8/Neovim.
 
 You must first set up authentication by creating a API Key or service account of GCP.
 
-Then you need to install the [trans](https://github.com/utahta/trans) command as follows.
+Then you need to install the [go](https://golang.org/dl/) of version 1.11 or more.
 
-```
-$ go get github.com/utahta/trans/cmd/trans
-```
-
-### API Key
+### Using API Key
 
 The API Key documentation can be found [here](https://cloud.google.com/translate/docs/auth#using_an_api_key).
 
 Set the environment variable `TRANS_API_KEY` to the API Key.
 
-### Service Account
+### Using Service Account
 
 The service account documentation can be found [here](https://cloud.google.com/iam/docs/creating-managing-service-accounts).
 
