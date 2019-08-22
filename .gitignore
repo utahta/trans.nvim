@@ -5,3 +5,4 @@
 .coverage
 bin
 pkg
+.envrc
