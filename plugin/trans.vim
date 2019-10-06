@@ -1,22 +1,20 @@
-if has('nvim')
-  finish
-endif
-
 if exists('g:loaded_trans_nvim')
   finish
 endif
 let g:loaded_trans_nvim = 1
 
-let s:trans = yarp#py3('trans_wrap')
+let s:plugin_name = 'trans'
+let s:plugin_root = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
+let s:plugin_cmd = [s:plugin_root . '/bin/' . s:plugin_name]
 
-func! Trans(...)
-  return s:trans.call('trans', a:000)
-endfunc
+function! s:JobStart(host) abort
+  return jobstart(s:plugin_cmd, { 'rpc': v:true })
+endfunction
 
-func! TransWord(...)
-  return s:trans.call('trans_word', a:000)
-endfunc
+call remote#host#Register(s:plugin_name, '', function('s:JobStart'))
 
-command! -nargs=? -range=% Trans : call Trans(<f-args>)
-command! -nargs=? -range=% TransWord : call TransWord(<f-args>)
-
+call remote#host#RegisterPlugin('trans', '0', [
+\ {'type': 'autocmd', 'name': 'CursorMoved,CursorMovedI', 'sync': 1, 'opts': {'group': 'trans-event', 'pattern': '*'}},
+\ {'type': 'command', 'name': 'Trans', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
+\ {'type': 'command', 'name': 'TransWord', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
+\ ])

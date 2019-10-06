@@ -4,6 +4,5 @@
 *.iml
 .coverage
 bin
-pkg
-/venv
-*.pyc
+vendor
+.envrc
