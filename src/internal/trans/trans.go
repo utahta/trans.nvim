@@ -28,7 +28,7 @@ func Run() {
 		p.HandleAutocmd(&plugin.AutocmdOptions{
 			Group:   event.Group,
 			Event:   "CursorMoved,CursorMovedI",
-			Pattern: "<buffer>",
+			Pattern: "*",
 		}, event.HandleFunc(event.TypeCursorMoved))
 		return nil
 	})

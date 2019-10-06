@@ -14,7 +14,7 @@ endfunction
 call remote#host#Register(s:plugin_name, '', function('s:JobStart'))
 
 call remote#host#RegisterPlugin('trans', '0', [
-\ {'type': 'autocmd', 'name': 'CursorMoved,CursorMovedI', 'sync': 1, 'opts': {'group': 'trans-event', 'pattern': '<buffer>'}},
+\ {'type': 'autocmd', 'name': 'CursorMoved,CursorMovedI', 'sync': 1, 'opts': {'group': 'trans-event', 'pattern': '*'}},
 \ {'type': 'command', 'name': 'Trans', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
 \ {'type': 'command', 'name': 'TransWord', 'sync': 1, 'opts': {'nargs': '?', 'range': '%'}},
 \ ])
