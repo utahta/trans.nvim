@@ -4,5 +4,5 @@
 *.iml
 .coverage
 bin
-pkg
+vendor
 .envrc
