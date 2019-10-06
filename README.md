@@ -53,4 +53,4 @@ Floating windows are supported in neovim >= 0.4.0.
 let g:trans_lang_output = 'float'
 ```
 
-A Floating window is automatically hide when mouse cursor is moved.
+A Floating window is automatically hide when cursor is moved.
