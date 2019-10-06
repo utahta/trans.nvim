@@ -1,6 +1,6 @@
 # trans.nvim
 
-trans.nvim is a plugin to translate text with Google Translator for Neovim.
+trans.nvim is a plugin for Neovim to translate text with Google Translator.
 
 ### message
 ![trans_nvim_normal_low](https://user-images.githubusercontent.com/97572/35632085-05f00030-06e9-11e8-92a5-98252d71ce1a.gif)
