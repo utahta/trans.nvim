@@ -32,8 +32,8 @@ func (h *handler) OpenCurrentWindow(winType string) (Window, error) {
 	switch winType {
 	case "preview":
 		h.currentWin = &previewWindow{vim: h.vim}
-	case "float", "floating":
-		if h.validFloatingWindow() {
+	case "float":
+		if h.canUseFloatingWindow() {
 			h.currentWin = &floatingWindow{vim: h.vim}
 		} else {
 			h.currentWin = &previewWindow{vim: h.vim}
@@ -55,7 +55,7 @@ func (h *handler) CloseCurrentWindow() error {
 	return h.currentWin.Close()
 }
 
-func (h *handler) validFloatingWindow() bool {
+func (h *handler) canUseFloatingWindow() bool {
 	for _, expr := range []string{`has('nvim')`, `exists('*nvim_win_set_config')`} {
 		var valid bool
 		if err := h.vim.Eval(expr, &valid); err != nil {

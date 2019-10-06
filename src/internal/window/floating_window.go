@@ -41,10 +41,9 @@ func (fw *floatingWindow) Open() error {
 		return err
 	}
 
-	event.On(event.TypeMoveEvent, func() error {
-		timer := time.NewTimer(1500 * time.Millisecond)
+	event.On(event.TypeCursorMoved, func() error {
 		select {
-		case <-timer.C:
+		case <-time.After(500 * time.Millisecond):
 			return fw.Close()
 		}
 	})
@@ -52,8 +51,7 @@ func (fw *floatingWindow) Open() error {
 }
 
 func (fw *floatingWindow) Close() error {
-	// we considered to use nvim_win_get_number api, but it occurs an error when window id is invalid
-	// so we still use win_id2win api.
+	// we have decided to use win_id2_win api because nvim_win_get_number api occurs an error when window id is invalid.
 	var winnr int
 	if err := fw.vim.Call("win_id2win", &winnr, fw.id); err != nil {
 		return err
@@ -111,5 +109,6 @@ func (fw *floatingWindow) getWindowConfig(row, col, height, width int) map[strin
 		"height":    height,
 		"width":     width,
 		"focusable": true,
+		"style":     "minimal",
 	}
 }

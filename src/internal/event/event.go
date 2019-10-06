@@ -8,53 +8,56 @@ import (
 )
 
 type (
-	Type         int
-	CallbackFunc func() error
+	Type     int
+	Callback func() error
 
 	handler struct {
-		vim          *nvim.Nvim
-		mux          sync.RWMutex
-		callbacksMap map[Type][]CallbackFunc
+		vim       *nvim.Nvim
+		mux       sync.RWMutex
+		callbacks map[Type][]Callback
 	}
 )
 
 const (
 	Group = "trans-event"
 
-	TypeMoveEvent Type = iota
+	TypeCursorMoved Type = iota
 )
 
 var (
-	defaultHandler *handler
+	defaultHandler     *handler
+	defaultHandlerOnce sync.Once
 )
 
-func RegisterHandler(vim *nvim.Nvim) {
-	defaultHandler = &handler{
-		vim:          vim,
-		callbacksMap: map[Type][]CallbackFunc{},
-	}
+func Init(vim *nvim.Nvim) {
+	defaultHandlerOnce.Do(func() {
+		defaultHandler = &handler{
+			vim:       vim,
+			callbacks: make(map[Type][]Callback),
+		}
+	})
 }
 
-func Callback(t Type) CallbackFunc {
-	return defaultHandler.Callback(t)
+func HandleFunc(t Type) func() error {
+	return defaultHandler.HandleFunc(t)
 }
 
-func On(t Type, cb CallbackFunc) {
+func On(t Type, cb Callback) {
 	defaultHandler.On(t, cb)
 }
 
-func (h *handler) Callback(t Type) CallbackFunc {
+func (h *handler) HandleFunc(t Type) func() error {
 	return func() error {
 		h.mux.Lock()
 		defer h.mux.Unlock()
 
-		cbs := h.callbacksMap[t]
+		cbs := h.callbacks[t]
 		if len(cbs) == 0 {
 			return nil
 		}
 
 		cb := cbs[0]
-		h.callbacksMap[t] = cbs[1:]
+		h.callbacks[t] = cbs[1:]
 
 		go func() {
 			if err := cb(); err != nil {
@@ -65,9 +68,9 @@ func (h *handler) Callback(t Type) CallbackFunc {
 	}
 }
 
-func (h *handler) On(t Type, cb CallbackFunc) {
+func (h *handler) On(t Type, cb Callback) {
 	h.mux.Lock()
 	defer h.mux.Unlock()
 
-	h.callbacksMap[t] = append(h.callbacksMap[t], cb)
+	h.callbacks[t] = append(h.callbacks[t], cb)
 }

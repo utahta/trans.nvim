@@ -1,11 +1,8 @@
 package window
 
 import (
-	"time"
-
 	"github.com/neovim/go-client/nvim"
 	"trans.nvim/src/internal/buffer"
-	"trans.nvim/src/internal/event"
 )
 
 type (
@@ -49,14 +46,6 @@ func (pw *previewWindow) Open() error {
 	if err := pw.vim.Command("wincmd p"); err != nil {
 		return err
 	}
-
-	event.On(event.TypeMoveEvent, func() error {
-		timer := time.NewTimer(1500 * time.Millisecond)
-		select {
-		case <-timer.C:
-			return pw.Close()
-		}
-	})
 	return nil
 }
 

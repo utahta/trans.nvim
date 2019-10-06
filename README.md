@@ -1,6 +1,6 @@
 # trans.nvim
 
-Google Translate plugin for Vim8/Neovim.
+trans.nvim is a plugin to translate text with Google Translator for Neovim.
 
 ### message
 ![trans_nvim_normal_low](https://user-images.githubusercontent.com/97572/35632085-05f00030-06e9-11e8-92a5-98252d71ce1a.gif)
@@ -12,19 +12,19 @@ Google Translate plugin for Vim8/Neovim.
 
 You must first set up authentication by creating a API Key or service account of GCP.
 
-Then you need to install the [go](https://golang.org/dl/) of version 1.11 or more.
+Then you need to install the [Go](https://golang.org/dl/) of version 1.11 or more.
 
 ### Using API Key
 
 The API Key documentation can be found [here](https://cloud.google.com/translate/docs/auth#using_an_api_key).
 
-Set the environment variable `TRANS_API_KEY` to the API Key.
+Please set the environment variable `TRANS_API_KEY` to the API Key.
 
-### Using Service Account
+### Or Using Service Account
 
 The service account documentation can be found [here](https://cloud.google.com/iam/docs/creating-managing-service-accounts).
 
-Set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the file path of the JSON file that contains your service account key.
+Please set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the file path of the JSON file that contains your service account key.
 
 ## Note
 
@@ -35,13 +35,7 @@ e.g. it costs $0.06 for 2889 characters.
 
 For vim-plug
 ```viml
-if has('nvim')
-  Plug 'utahta/trans.nvim', {'do': 'make'}
-else
-  Plug 'utahta/trans.nvim', {'do': 'make'}
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
+Plug 'utahta/trans.nvim', {'do': 'make'}
 ```
 
 ## Settings
@@ -50,3 +44,13 @@ endif
 let g:trans_lang_locale = 'ja'
 let g:trans_lang_output = 'preview'
 ```
+
+### To use floating windows
+
+Floating windows are supported in neovim >= 0.4.0.
+
+```viml
+let g:trans_lang_output = 'float'
+```
+
+A Floating window is automatically hide when mouse cursor is moved.

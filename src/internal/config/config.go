@@ -53,7 +53,11 @@ func (c *config) CredentialsFile() string {
 	return creds
 }
 
-// Output returns a `preview` or empty value.
+// Output returns a `preview` or `` or `float`.
+//
+// `preview` displays text with preview window.
+// `` (empty string) displays text with message.
+// `float` displays text with floating window.
 func (c *config) Output() string {
 	var o string
 	if err := c.vim.Var("trans_lang_output", &o); err != nil {
