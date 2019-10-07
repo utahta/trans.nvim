@@ -2,6 +2,7 @@ package translator
 
 import (
 	"context"
+	"os"
 	"strings"
 
 	"github.com/neovim/go-client/nvim"
@@ -107,7 +108,9 @@ func (t *translator) translate(ctx context.Context, text string, opt Option) (st
 	}
 
 	var opts []option.ClientOption
-	if opt.CredentialsFile != "" {
+	if apiKey := os.Getenv(trans.EnvTransAPIKey); apiKey != "" {
+		opts = append(opts, option.WithAPIKey(apiKey))
+	} else if opt.CredentialsFile != "" {
 		opts = append(opts, option.WithCredentialsFile(opt.CredentialsFile))
 	}
 
