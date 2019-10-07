@@ -1,6 +1,6 @@
 export GO111MODULE=on
 
-all: build manifest
+all: build
 
 build:
 	go build -o bin/trans ./src/cmd/trans
