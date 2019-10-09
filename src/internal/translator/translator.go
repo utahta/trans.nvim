@@ -87,9 +87,8 @@ func (t *translator) TranslatePos(ctx context.Context, opt Option) (string, erro
 			}
 			lines[i] = strings.TrimSpace(line)
 		}
-		text = strings.Join(lines, " ")
+		text = strings.Join(lines, "\n")
 	}
-	text = strings.Replace(text, "\n", " ", -1)
 
 	return t.translate(ctx, text, opt)
 }

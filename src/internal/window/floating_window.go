@@ -2,7 +2,6 @@ package window
 
 import (
 	"fmt"
-	"math"
 	"strings"
 	"time"
 
@@ -70,18 +69,28 @@ func (fw *floatingWindow) SetLine(s string) error {
 		width  int
 		height int
 	)
-	s = strings.TrimSpace(s)
-	if err := fw.vim.Call("strdisplaywidth", &width, s); err != nil {
-		return err
-	}
 
-	const maxWidth = 80
-	if width > maxWidth {
-		height = int(math.Ceil(float64(width) / float64(maxWidth)))
-		width = maxWidth
-	} else {
-		height = 1
+	ss := strings.Split(s, "\n")
+	for i := range ss {
+		ss[i] = strings.TrimSpace(ss[i])
+
+		var w int
+		if err := fw.vim.Call("strdisplaywidth", &w, ss[i]); err != nil {
+			return err
+		}
+		if w > width {
+			width = w
+		}
 	}
+	height = len(ss)
+
+	// padding
+	width += 4
+	height +=  2
+	for i := range ss {
+		ss[i] = "  " + ss[i]
+	}
+	ss = append([]string{""}, ss...)
 
 	var (
 		winline int
@@ -98,7 +107,7 @@ func (fw *floatingWindow) SetLine(s string) error {
 	if err := fw.vim.Call("nvim_win_set_config", nil, fw.id, fw.getWindowConfig(row, col, height, width)); err != nil {
 		return err
 	}
-	return fw.buffer.WriteString(s)
+	return fw.buffer.WriteStrings(ss)
 }
 
 func (fw *floatingWindow) getWindowConfig(row, col, height, width int) map[string]interface{} {
