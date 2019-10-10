@@ -49,7 +49,7 @@ func (c *handler) Trans(args []string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	text, err := c.translator.TranslatePos(ctx, translator.Option{
+	ss, err := c.translator.TranslatePos(ctx, translator.Option{
 		Source:          "",
 		Target:          target,
 		Cutset:          c.config.Cutset(),
@@ -66,7 +66,7 @@ func (c *handler) Trans(args []string) error {
 	if err != nil {
 		return err
 	}
-	return w.SetLine(text)
+	return w.SetLine(ss)
 }
 
 func (c *handler) TransWord(args []string) error {
@@ -77,7 +77,7 @@ func (c *handler) TransWord(args []string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	text, err := c.translator.TranslateWord(ctx, translator.Option{
+	ss, err := c.translator.TranslateWord(ctx, translator.Option{
 		Source:          "",
 		Target:          target,
 		Cutset:          c.config.Cutset(),
@@ -94,5 +94,5 @@ func (c *handler) TransWord(args []string) error {
 	if err != nil {
 		return err
 	}
-	return w.SetLine(text)
+	return w.SetLine(ss)
 }

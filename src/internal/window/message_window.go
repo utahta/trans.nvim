@@ -2,6 +2,7 @@ package window
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/neovim/go-client/nvim"
 )
@@ -20,6 +21,6 @@ func (mw *messageWindow) Close() error {
 	return nil
 }
 
-func (mw *messageWindow) SetLine(s string) error {
-	return mw.vim.WriteOut(fmt.Sprintf("%s\n", s))
+func (mw *messageWindow) SetLine(ss []string) error {
+	return mw.vim.WriteOut(fmt.Sprintf("%s\n", strings.Join(ss, " ")))
 }

@@ -56,6 +56,6 @@ func (pw *previewWindow) Close() error {
 	return nil
 }
 
-func (pw *previewWindow) SetLine(s string) error {
-	return pw.buffer.WriteString(s)
+func (pw *previewWindow) SetLine(ss []string) error {
+	return pw.buffer.WriteStrings(ss)
 }

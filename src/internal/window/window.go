@@ -20,7 +20,7 @@ type (
 	Window interface {
 		Open() error
 		Close() error
-		SetLine(s string) error
+		SetLine([]string) error
 	}
 )
 
