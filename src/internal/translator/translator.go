@@ -12,8 +12,8 @@ import (
 
 type (
 	Translator interface {
-		TranslatePos(ctx context.Context, opt Option) (string, error)
-		TranslateWord(ctx context.Context, opt Option) (string, error)
+		TranslatePos(ctx context.Context, opt Option) ([]string, error)
+		TranslateWord(ctx context.Context, opt Option) ([]string, error)
 	}
 
 	translator struct {
@@ -34,25 +34,25 @@ func New(vim *nvim.Nvim) Translator {
 	}
 }
 
-func (t *translator) TranslatePos(ctx context.Context, opt Option) (string, error) {
+func (t *translator) TranslatePos(ctx context.Context, opt Option) ([]string, error) {
 	var startPos []int
 	if err := t.vim.Eval(`getpos("'<")`, &startPos); err != nil {
-		return "", err
+		return nil, err
 	}
 	var endPos []int
 	if err := t.vim.Eval(`getpos("'>")`, &endPos); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if startPos[1] == 0 && startPos[2] == 0 && endPos[1] == 0 && endPos[2] == 0 {
-		return "", nil
+		return nil, nil
 	}
 
 	var text string
 	if startPos[1] == endPos[1] {
 		b, err := t.vim.CurrentLine()
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		text = string(b)
 		if endPos[2] > len(text) {
@@ -62,11 +62,11 @@ func (t *translator) TranslatePos(ctx context.Context, opt Option) (string, erro
 	} else {
 		b, err := t.vim.CurrentBuffer()
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		bytes, err := t.vim.BufferLines(b, startPos[1]-1, endPos[1], true)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
 		lines := make([]string, len(bytes))
@@ -93,17 +93,17 @@ func (t *translator) TranslatePos(ctx context.Context, opt Option) (string, erro
 	return t.translate(ctx, text, opt)
 }
 
-func (t *translator) TranslateWord(ctx context.Context, opt Option) (string, error) {
+func (t *translator) TranslateWord(ctx context.Context, opt Option) ([]string, error) {
 	var text string
 	if err := t.vim.Eval("expand('<cword>')", &text); err != nil {
-		return "", err
+		return nil, err
 	}
 	return t.translate(ctx, text, opt)
 }
 
-func (t *translator) translate(ctx context.Context, text string, opt Option) (string, error) {
+func (t *translator) translate(ctx context.Context, text string, opt Option) ([]string, error) {
 	if text == "" {
-		return "", nil
+		return nil, nil
 	}
 
 	var opts []option.ClientOption
@@ -115,8 +115,17 @@ func (t *translator) translate(ctx context.Context, text string, opt Option) (st
 
 	cli, err := trans.New(ctx, opts...)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return cli.Translate(ctx, text, opt.Source, opt.Target)
+	s, err := cli.Translate(ctx, text, opt.Source, opt.Target)
+	if err != nil {
+		return nil, err
+	}
+
+	ss := strings.Split(s, "\n")
+	for i := range ss {
+		ss[i] = strings.TrimSpace(ss[i])
+	}
+	return ss, nil
 }

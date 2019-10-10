@@ -2,7 +2,6 @@ package window
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/neovim/go-client/nvim"
@@ -64,16 +63,13 @@ func (fw *floatingWindow) Close() error {
 	return nil
 }
 
-func (fw *floatingWindow) SetLine(s string) error {
+func (fw *floatingWindow) SetLine(ss []string) error {
 	var (
 		width  int
 		height int
 	)
 
-	ss := strings.Split(s, "\n")
 	for i := range ss {
-		ss[i] = strings.TrimSpace(ss[i])
-
 		var w int
 		if err := fw.vim.Call("strdisplaywidth", &w, ss[i]); err != nil {
 			return err

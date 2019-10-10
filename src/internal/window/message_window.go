@@ -21,7 +21,6 @@ func (mw *messageWindow) Close() error {
 	return nil
 }
 
-func (mw *messageWindow) SetLine(s string) error {
-	s = strings.Replace(s, "\n", " ", -1)
-	return mw.vim.WriteOut(fmt.Sprintf("%s\n", s))
+func (mw *messageWindow) SetLine(ss []string) error {
+	return mw.vim.WriteOut(fmt.Sprintf("%s\n", strings.Join(ss, " ")))
 }

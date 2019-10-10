@@ -2,7 +2,6 @@ package window
 
 import (
 	"github.com/neovim/go-client/nvim"
-	"strings"
 	"trans.nvim/src/internal/buffer"
 )
 
@@ -57,7 +56,6 @@ func (pw *previewWindow) Close() error {
 	return nil
 }
 
-func (pw *previewWindow) SetLine(s string) error {
-	ss := strings.Split(s, "\n")
+func (pw *previewWindow) SetLine(ss []string) error {
 	return pw.buffer.WriteStrings(ss)
 }
