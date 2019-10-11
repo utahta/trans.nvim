@@ -42,9 +42,7 @@ func Init(p *plugin.Plugin, group string) {
 
 		p.HandleFunction(&plugin.FunctionOptions{
 			Name: handleFuncName,
-		}, func(args []string) {
-			defaultHandler.handle(args)
-		})
+		}, defaultHandler.handle)
 	})
 }
 
