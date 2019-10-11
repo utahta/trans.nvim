@@ -3,10 +3,13 @@
 trans.nvim is a plugin for Neovim to translate text with Google Translator.
 
 ### message
-![trans_nvim_normal_low](https://user-images.githubusercontent.com/97572/35632085-05f00030-06e9-11e8-92a5-98252d71ce1a.gif)
+![trans_nvim_message](https://user-images.githubusercontent.com/97572/66647837-ed156d80-ec64-11e9-91ce-222b7b529dc8.gif)
 
 ### preview
-![trans_nvim_previe_log](https://user-images.githubusercontent.com/97572/35763640-f51224d4-08f3-11e8-8d13-0510d13d240d.gif)
+![trans_nvim_preview](https://user-images.githubusercontent.com/97572/66647812-da029d80-ec64-11e9-86f9-44414dc89bba.gif)
+
+### floating window
+![trans_nvim_floating_window](https://user-images.githubusercontent.com/97572/66648107-b12ed800-ec65-11e9-9131-49568c07b619.gif)
 
 ## Required
 
