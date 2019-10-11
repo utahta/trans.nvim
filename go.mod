@@ -5,6 +5,7 @@ go 1.12
 require (
 	cloud.google.com/go v0.46.3 // indirect
 	github.com/golang/groupcache v0.0.0-20191002201903-404acd9df4cc // indirect
+	github.com/google/uuid v1.1.1
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/neovim/go-client v1.0.0
 	github.com/utahta/trans v0.0.0-20191007053726-58b4138472a5

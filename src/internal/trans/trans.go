@@ -24,12 +24,7 @@ func Run() {
 		p.HandleCommand(&plugin.CommandOptions{Name: "Trans", NArgs: "?", Range: "%"}, h.Trans)
 		p.HandleCommand(&plugin.CommandOptions{Name: "TransWord", NArgs: "?", Range: "%"}, h.TransWord)
 
-		event.Init(p.Nvim)
-		p.HandleAutocmd(&plugin.AutocmdOptions{
-			Group:   event.Group,
-			Event:   "CursorMoved,CursorMovedI",
-			Pattern: "*",
-		}, event.HandleFunc(event.TypeCursorMoved))
+		event.Init(p, "trans")
 		return nil
 	})
 }

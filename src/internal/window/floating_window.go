@@ -39,7 +39,7 @@ func (fw *floatingWindow) Open() error {
 		return err
 	}
 
-	event.On(event.TypeCursorMoved, func() error {
+	event.Once("CursorMoved,CursorMovedI", "<buffer>", func() error {
 		select {
 		case <-time.After(500 * time.Millisecond):
 			return fw.Close()
@@ -82,7 +82,7 @@ func (fw *floatingWindow) SetLine(ss []string) error {
 
 	// padding
 	width += 4
-	height +=  2
+	height += 2
 	for i := range ss {
 		ss[i] = "  " + ss[i]
 	}
