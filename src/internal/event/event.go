@@ -2,6 +2,7 @@ package event
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -86,9 +87,19 @@ func (h *handler) buildHandleCommand(cb Callback) string {
 }
 
 func (h *handler) once(typ string, pattern string, cb Callback) {
-	cmd := fmt.Sprintf(`autocmd %s %s ++once %s`,
+	h.on(typ, pattern, true, cb)
+}
+
+func (h *handler) on(typ string, pattern string, once bool, cb Callback) {
+	var options []string
+	if once {
+		options = append(options, "++once")
+	}
+	cmd := fmt.Sprintf(`augroup %s | au %s %s %s %s | augroup END`,
+		h.group,
 		typ,
 		pattern,
+		strings.Join(options, " "),
 		h.buildHandleCommand(cb),
 	)
 	if err := h.vim.Command(cmd); err != nil {
