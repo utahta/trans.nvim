@@ -2,7 +2,6 @@ package window
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/neovim/go-client/nvim"
 	"trans.nvim/src/internal/buffer"
@@ -39,11 +38,8 @@ func (fw *floatingWindow) Open() error {
 		return err
 	}
 
-	event.On(event.TypeCursorMoved, func() error {
-		select {
-		case <-time.After(500 * time.Millisecond):
-			return fw.Close()
-		}
+	event.Once("CursorMoved,CursorMovedI", "<buffer>", func() error {
+		return fw.Close()
 	})
 	return nil
 }
@@ -82,7 +78,7 @@ func (fw *floatingWindow) SetLine(ss []string) error {
 
 	// padding
 	width += 4
-	height +=  2
+	height += 2
 	for i := range ss {
 		ss[i] = "  " + ss[i]
 	}
