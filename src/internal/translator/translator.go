@@ -118,7 +118,7 @@ func (t *translator) translate(ctx context.Context, text string, opt Option) ([]
 		return nil, err
 	}
 
-	s, err := cli.Translate(ctx, text, opt.Source, opt.Target)
+	s, err := cli.Translate(ctx, text, opt.Source, opt.Target, false)
 	if err != nil {
 		return nil, err
 	}
