@@ -62,7 +62,6 @@ func (h *handler) handle(args []string) {
 
 	cb, ok := h.callbacks[id]
 	if !ok {
-		h.vim.WritelnErr("event.handler.handle: callback not found")
 		return
 	}
 	delete(h.callbacks, id)
