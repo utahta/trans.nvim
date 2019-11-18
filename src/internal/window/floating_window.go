@@ -80,6 +80,8 @@ func (fw *floatingWindow) SetLine(ss []string) error {
 		if w > winwidth {
 			width = winwidth
 
+			// Use binary search to find the maximum width of floating window.
+			// But there may be a better way
 			var (
 				rs = []rune(ss[i])
 				lb = -1
