@@ -61,16 +61,52 @@ func (fw *floatingWindow) Close() error {
 
 func (fw *floatingWindow) SetLine(ss []string) error {
 	var (
-		width  int
-		height int
+		width    int
+		height   int
+		winwidth int
 	)
 
-	for i := range ss {
+	if err := fw.vim.Call("winwidth", &winwidth, 0); err != nil {
+		return err
+	}
+	winwidth -= 4 // for padding
+
+	for i := 0; i < len(ss); i++ {
 		var w int
 		if err := fw.vim.Call("strdisplaywidth", &w, ss[i]); err != nil {
 			return err
 		}
-		if w > width {
+
+		if w > winwidth {
+			width = winwidth
+
+			// Use binary search to find the maximum width of floating window.
+			// But there may be a better way
+			var (
+				rs = []rune(ss[i])
+				lb = -1
+				ub = len(rs)
+			)
+			for ub-lb > 1 {
+				mid := (ub + lb) / 2
+				var midwidth int
+				if err := fw.vim.Call("strdisplaywidth", &midwidth, string(rs[0:mid])); err != nil {
+					return err
+				}
+				if midwidth >= winwidth {
+					ub = mid
+				} else {
+					lb = mid
+				}
+			}
+
+			ss[i] = string(rs[0:ub])
+			if i == len(ss)-1 {
+				ss = append(ss, string(rs[ub:]))
+			} else {
+				ss[i+1] = string(rs[ub:]) + ss[i+1]
+			}
+		} else if w > width {
 			width = w
 		}
 	}
